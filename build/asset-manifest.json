@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/static/css/main.a114ec40.css",
+    "main.js": "/static/js/main.55df6978.js",
+    "static/js/787.d1d4a2c2.chunk.js": "/static/js/787.d1d4a2c2.chunk.js",
+    "static/media/awhite_200121_3873_0021_2.jpg": "/static/media/awhite_200121_3873_0021_2.532dc938b87302d50dbd.jpg",
+    "static/media/Montserrat-Regular.ttf": "/static/media/Montserrat-Regular.ceb11275ab638627a643.ttf",
+    "static/media/Koenigsegg-Jesko_Absolut-2021-1280-02-1024x738.jpg": "/static/media/Koenigsegg-Jesko_Absolut-2021-1280-02-1024x738.88fa7ca90da06b209676.jpg",
+    "static/media/Raleway-Regular.ttf": "/static/media/Raleway-Regular.3927fa2a37e6f7f4c7c0.ttf",
+    "static/media/Raleway-Thin.ttf": "/static/media/Raleway-Thin.37b903083fc82c0bdc17.ttf",
+    "static/media/Raleway-Black.ttf": "/static/media/Raleway-Black.6d75f2b870b0a5df344d.ttf",
+    "static/media/bike.jpg": "/static/media/bike.d5e093658c503d95283c.jpg",
+    "static/media/logo.png": "/static/media/logo.caaf1b6c7b742e7043a2.png",
+    "static/media/51zDfRUUhHL.jpg": "/static/media/51zDfRUUhHL.337febfd6751fc9f1275.jpg",
+    "static/media/Gantari-Regular.ttf": "/static/media/Gantari-Regular.0f98449f2f3eb4b6e3f2.ttf",
+    "index.html": "/index.html",
+    "main.a114ec40.css.map": "/static/css/main.a114ec40.css.map",
+    "main.55df6978.js.map": "/static/js/main.55df6978.js.map",
+    "787.d1d4a2c2.chunk.js.map": "/static/js/787.d1d4a2c2.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a114ec40.css",
+    "static/js/main.55df6978.js"
+  ]
+}
