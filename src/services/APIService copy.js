@@ -4,21 +4,28 @@ const api = axios.create({
   baseURL: "http://localhost:8000/",
   headers: {
     "Content-Type": "application/json",
-    accept: "application/json",
-    Authorization: "Bearer " + localStorage.getItem("access_token"),
+    "Acess-Control-Allow-Origin": "*",
+    Authorization: localStorage.getItem("access_token"),
+    Accept: "application/json",
   },
 });
 
 export const getAllData = async (url) => {
-  const res = await api.get("/" + url + "/");
-  return res.data;
+  try {
+    let res = await api.get("/" + url + "/");
+    console.log("Joel Kumwenda");
+    return res;
+  } catch (err) {
+    console.log("John Kumwenda");
+    return err;
+  }
 };
 
 export const createData = async (url, usedata) => {
   try {
     let res = await api
       .post("/" + url, usedata)
-      .then((res) => console.log(res.data));
+      .then(({ res }) => console.log(res.data));
     return res.data;
   } catch (err) {
     console.log(err);

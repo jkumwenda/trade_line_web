@@ -9,7 +9,7 @@ export default function AddTrader() {
 
   const handleSubmit = async (event) => {
     let data = { trader: trader, address: address };
-    await createData("traders/", data).then(({ res }) => res);
+    await createData("traders/", data).then((res) => res);
     return navigate("/traders", { replace: true });
   };
 
@@ -22,7 +22,7 @@ export default function AddTrader() {
         <form className="sm:w-7/12 w-full">
           <div className="mb-6">
             <label
-              htmlFor="username"
+              htmlFor="trader"
               className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
             >
               Trader

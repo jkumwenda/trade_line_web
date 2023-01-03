@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import AdminPagination from "../../../components/AdminPagination";
 import AdminPageSearch from "../../../components/AdminPageSearch";
+import { getAllData } from "../../../services/APIService";
+import ClipLoader from "react-spinners/ClipLoader";
+import DeleteConfirmation from "../../../components/DeleteConfirmation";
+
 import {
   PlusCircleIcon,
   TrashIcon,
@@ -8,44 +12,44 @@ import {
   EyeIcon,
 } from "@heroicons/react/24/solid";
 import { NavLink } from "react-router-dom";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-const api = axios.create({
-  baseURL: "http://localhost:8000/",
-});
 
 function Traders() {
-  const navigate = useNavigate();
   const [traders, setTraders] = useState([]);
+  const [error, setError] = useState(true);
+  const [isShowDialog, setIsShowDialog] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
-    api
-      .get("traders/")
+    setLoading(true);
+    getAllData("traders")
       .then((res) => {
-        setTraders(res.data);
+        setTraders(res);
+        setLoading(false);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
+        setError(true);
       });
   }, []);
 
   const viewTrader = async (id) => {
     console.log(id);
   };
-
   const updateTrader = async (id) => {
     console.log(id);
   };
 
   const deleteTrader = async (id) => {
-    await api
-      .delete("traders/" + id)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    // await api
+    //   .delete("traders/" + id)
+    //   .then((res) => {
+    //     console.log(res);
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
   };
+
+  // if (error) return <p>An error occurred</p>;
 
   return (
     <div className="flex flex-col bg-concrete-50 shadow-sm rounded-xl">

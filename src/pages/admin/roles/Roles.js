@@ -1,30 +1,32 @@
 import React, { useState, useEffect } from "react";
 import AdminPagination from "../../../components/AdminPagination";
 import AdminPageSearch from "../../../components/AdminPageSearch";
+import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { getAllData } from "../../../services/APIService";
+import ClipLoader from "react-spinners/ClipLoader";
 import {
   PlusCircleIcon,
   TrashIcon,
   PencilSquareIcon,
   EyeIcon,
 } from "@heroicons/react/24/solid";
-import { NavLink } from "react-router-dom";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-const api = axios.create({
-  baseURL: "http://localhost:8000/",
-});
 
 function Roles() {
   const navigate = useNavigate();
   const [roles, setRoles] = useState([]);
+  const [error, setError] = useState(true);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
-    api
-      .get("roles/")
+    setLoading(true);
+    getAllData("roles")
       .then((res) => {
-        setRoles(res.data);
+        setRoles(res);
+        setLoading(false);
+        setError(false);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
+        setError(true);
       });
   }, []);
 
@@ -37,14 +39,14 @@ function Roles() {
   };
 
   const deleteRole = async (id) => {
-    await api
-      .delete("roles/" + id)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    // await api
+    //   .delete("roles/" + id)
+    //   .then((res) => {
+    //     console.log(res);
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
   };
 
   return (
@@ -59,54 +61,61 @@ function Roles() {
         </NavLink>
         <AdminPageSearch></AdminPageSearch>
       </div>
+
       <div className="p-4">
-        <div className="overflow-x-auto relative">
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs bg-gray-100 text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
-              <tr>
-                <th scope="col" className="py-3 px-6">
-                  Role
-                </th>
-                <th scope="col" className="py-3 px-6">
-                  Description
-                </th>
-                <th scope="col" className="py-3 px-6">
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {roles.map((role) => (
-                <tr
-                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                  key={role.id}
-                >
-                  <th
-                    scope="row"
-                    className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                  >
-                    {role.role}
+        {loading ? (
+          <div className="p-4 m-4 grid justify-items-center">
+            <ClipLoader p-4 m-4 color={"#DB2F30"} loading={loading} size={50} />
+          </div>
+        ) : (
+          <div className="overflow-x-auto relative">
+            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <thead className="text-xs bg-gray-100 text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                  <th scope="col" className="py-3 px-6">
+                    Role
                   </th>
-                  <td className="py-4 px-6">{role.description}</td>
-                  <td className="py-4 px-6 flex flex-start space-x-2">
-                    <EyeIcon
-                      className="h-7 w-7 text-blue-500 cursor-pointer"
-                      onClick={() => viewRole(role.id)}
-                    ></EyeIcon>
-                    <PencilSquareIcon
-                      className="h-6 w-6 text-green-600 cursor-pointer"
-                      onClick={() => updateRole(role.id)}
-                    ></PencilSquareIcon>
-                    <TrashIcon
-                      className="h-6 w-6 text-red-600 cursor-pointer"
-                      onClick={() => deleteRole(role.id)}
-                    ></TrashIcon>
-                  </td>
+                  <th scope="col" className="py-3 px-6">
+                    Description
+                  </th>
+                  <th scope="col" className="py-3 px-6">
+                    Action
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {roles.map((role) => (
+                  <tr
+                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                    key={role.id}
+                  >
+                    <th
+                      scope="row"
+                      className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                    >
+                      {role.role}
+                    </th>
+                    <td className="py-4 px-6">{role.description}</td>
+                    <td className="py-4 px-6 flex flex-start space-x-2">
+                      <EyeIcon
+                        className="h-7 w-7 text-blue-500 cursor-pointer"
+                        onClick={() => viewRole(role.id)}
+                      ></EyeIcon>
+                      <PencilSquareIcon
+                        className="h-6 w-6 text-green-600 cursor-pointer"
+                        onClick={() => updateRole(role.id)}
+                      ></PencilSquareIcon>
+                      <TrashIcon
+                        className="h-6 w-6 text-red-600 cursor-pointer"
+                        onClick={() => deleteRole(role.id)}
+                      ></TrashIcon>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
       <AdminPagination></AdminPagination>
     </div>

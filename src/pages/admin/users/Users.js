@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import AdminPagination from "../../../components/AdminPagination";
 import AdminPageSearch from "../../../components/AdminPageSearch";
+import ClipLoader from "react-spinners/ClipLoader";
 import {
   PlusCircleIcon,
   TrashIcon,
@@ -10,43 +11,66 @@ import {
 import { NavLink } from "react-router-dom";
 import { getAllData, deleteData } from "../../../services/APIService";
 
-class Users extends Component {
-  state = { users: [] };
+export default function Users() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [isShowDialog, setIsShowDialog] = useState(false);
+  const [auctionId, setAuctionId] = useState();
 
-  constructor() {
-    super();
-    this.getUsers();
-  }
+  useEffect(() => {
+    setLoading(true);
+    getAllData("users")
+      .then((res) => {
+        setAuctions(res);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(true);
+      });
+  }, []);
 
-  getUsers = async () => {
-    let data = await getAllData("users/").then(({ data }) => data);
-    this.setState({ users: data });
+  const viewUser = async (id) => {
+    return navigate("/user", {
+      state: { userId: id },
+      replace: true,
+    });
   };
 
-  viewUser = async (id) => {
+  const updateUser = async (id) => {
     console.log(id);
   };
 
-  deleteUser = async (id) => {
-    let res = await deleteData("users", id).then(({ res }) => res);
-    console.log("Deleted from the table", res);
-    this.getUsers();
+  const deleteUser = async (id) => {
+    // await api
+    //   .delete("auctions/" + id)
+    //   .then((res) => {
+    //     console.log(res);
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
+    // setIsShowDialog(!isShowDialog);
   };
 
-  render() {
-    return (
-      <div className="flex flex-col bg-concrete-50 shadow-sm rounded-xl">
-        <h3 className="p-4 font-raleway rounded-t-xl font-extrabold border-b border-concrete-500 text-pickled-bluewood-400">
-          Users
-        </h3>
-        <div className="flex justify-between items-center w-full p-4">
-          <NavLink to="/add-user" className="flex items-center space-x-2">
-            <PlusCircleIcon className="h-12 w-12 text-cerise-500"></PlusCircleIcon>
-            <p className="font-extrabold text-sm">Add user</p>
-          </NavLink>
-          <AdminPageSearch></AdminPageSearch>
-        </div>
-        <div className="p-4">
+  return (
+    <div className="flex flex-col bg-concrete-50 shadow-sm rounded-xl">
+      <h3 className="p-4 font-raleway rounded-t-xl font-extrabold border-b border-concrete-500 text-pickled-bluewood-400">
+        Users
+      </h3>
+      <div className="flex justify-between items-center w-full p-4">
+        <NavLink to="/add-user" className="flex items-center space-x-2">
+          <PlusCircleIcon className="h-12 w-12 text-cerise-500"></PlusCircleIcon>
+          <p className="font-extrabold text-sm">Add user</p>
+        </NavLink>
+        <AdminPageSearch></AdminPageSearch>
+      </div>
+      <div className="p-4">
+        {loading ? (
+          <div className="p-4 m-4 grid justify-items-center">
+            <ClipLoader color={"#DB2F30"} loading={loading} size={50} />
+          </div>
+        ) : (
           <div className="overflow-x-auto relative">
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
               <thead className="text-xs bg-gray-100 text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
@@ -69,7 +93,7 @@ class Users extends Component {
                 </tr>
               </thead>
               <tbody>
-                {this.state.users.map((user) => (
+                {users.map((user) => (
                   <tr
                     className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                     key={user.id}
@@ -102,11 +126,9 @@ class Users extends Component {
               </tbody>
             </table>
           </div>
-        </div>
-        <AdminPagination></AdminPagination>
+        )}
       </div>
-    );
-  }
+      <AdminPagination></AdminPagination>
+    </div>
+  );
 }
-
-export default Users;

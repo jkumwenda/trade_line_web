@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
-// import { RequireToken } from "./services/AuthService";
+import { RequireToken } from "./services/AuthService";
+
 import Web from "./layouts/Web";
 import Auth from "./layouts/Auth";
 import Admin from "./layouts/Admin";
@@ -50,7 +51,14 @@ function App() {
           <Route path="login" element={<Login />} />
         </Route>
         <Route element={<Admin />}>
-          <Route path="dashboard" element={<Dashboard />} />
+          <Route
+            path="dashboard"
+            element={
+              <RequireToken>
+                <Dashboard />
+              </RequireToken>
+            }
+          />
           <Route path="users" element={<Users />} />
           <Route path="add-user" element={<AddUser />} />
           <Route path="roles" element={<Roles />} />
