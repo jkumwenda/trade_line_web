@@ -17,8 +17,9 @@ export default function AddAuction() {
       bid_end_time: Moment(date_range[1]).format("YYYY-MM-DDTHH:mm:ss"),
     };
 
-    await createData("auctions/", data).then(({ res }) => console.log(res));
-    // return navigate("/auction", { state: { auctionId: id }, replace: true });
+    await createData("auctions/", data).then((res) => console.log(res));
+    // return navigate("/auctions", { state: { auctionId: id }, replace: true });
+    return navigate("/auctions", { replace: true });
   };
 
   return (

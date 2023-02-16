@@ -7,6 +7,7 @@ import Admin from "./layouts/Admin";
 import Home from "./pages/web/home/Home";
 import HowItWorks from "./pages/web/how_it_works/HowItWorks";
 import AuctionItems from "./pages/web/auction_items/AuctionItems";
+import MyBids from "./pages/web/my_bids/MyBids";
 import Item from "./pages/web/auction_items/Item";
 import Faqs from "./pages/web/faqs/Faqs";
 import ContactUs from "./pages/web/contact_us/ContactUs";
@@ -31,6 +32,8 @@ import EditTrader from "./pages/admin/traders/EditTrader";
 import ItemCategories from "./pages/admin/item_categories/ItemCategories";
 import AddItemCategory from "./pages/admin/item_categories/AddItemCategory";
 import EditItemCategory from "./pages/admin/item_categories/EditItemCategory";
+import Settings from "./pages/admin/settings/Settings";
+import Help from "./pages/admin/help/Help";
 
 import NoMatch from "./pages/NoMatch";
 import Login from "./pages/admin/login/Login";
@@ -44,6 +47,7 @@ function App() {
           <Route path="how-it-works" element={<HowItWorks />} />
           <Route path="auction-items" element={<AuctionItems />} />
           <Route path="item" element={<Item />} />
+          <Route path="my-bids" element={<MyBids />} />
           <Route path="faqs" element={<Faqs />} />
           <Route path="contact-us" element={<ContactUs />} />
         </Route>
@@ -63,6 +67,7 @@ function App() {
           <Route path="add-user" element={<AddUser />} />
           <Route path="roles" element={<Roles />} />
           <Route path="add-role" element={<AddRole />} />
+          <Route path="edit-role" element={<EditRole />} />
           <Route path="edit-role:roleId" element={<EditRole />} />
           <Route path="auctions" element={<Auctions />} />
           <Route path="auction" element={<Auction />} />
@@ -74,6 +79,8 @@ function App() {
           <Route path="edit-trader:roleId" element={<EditTrader />} />
           <Route path="item_categories" element={<ItemCategories />} />
           <Route path="add-item-category" element={<AddItemCategory />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="help" element={<Help />} />
           <Route
             path="edit-item-category:roleId"
             element={<EditItemCategory />}

@@ -17,7 +17,7 @@ class AdminSidebar extends Component {
     return (
       <div className="flex flex-col space-y-6 w-full grow">
         <div className="p-1">
-          <NavLink to="/">
+          <NavLink to="dashboard">
             <img
               src={require("../../assets/images/logo.png")}
               className="w-52 h-auto rounded-xl"
@@ -75,13 +75,13 @@ class AdminSidebar extends Component {
             </NavLink>
           </li>
           <li className="hover:bg-concrete-500 p-1 rounded-xl">
-            <NavLink to="/dashboard" className="flex items-center space-x-2">
+            <NavLink to="/settings" className="flex items-center space-x-2">
               <Cog6ToothIcon className="h-6 w-6 text-pickled-bluewood-300"></Cog6ToothIcon>
               <span>System settings</span>
             </NavLink>
           </li>
           <li className="hover:bg-concrete-500 p-1 rounded-xl">
-            <NavLink to="/dashboard" className="flex items-center space-x-2">
+            <NavLink to="/help" className="flex items-center space-x-2">
               <QuestionMarkCircleIcon className="h-6 w-6 text-pickled-bluewood-300"></QuestionMarkCircleIcon>
               <span>Help</span>
             </NavLink>

@@ -1,29 +1,39 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import AdminPagination from "../../../components/AdminPagination";
 import AdminPageSearch from "../../../components/AdminPageSearch";
+import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { getAllData, deleteData } from "../../../services/APIService";
 import ClipLoader from "react-spinners/ClipLoader";
+import DeleteConfirmation from "../../../components/DeleteConfirmation";
+
 import {
   PlusCircleIcon,
   TrashIcon,
   PencilSquareIcon,
   EyeIcon,
 } from "@heroicons/react/24/solid";
-import { NavLink } from "react-router-dom";
-import { getAllData, deleteData } from "../../../services/APIService";
 
-export default function Users() {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [users, setUsers] = useState([]);
-  const [isShowDialog, setIsShowDialog] = useState(false);
-  const [auctionId, setAuctionId] = useState();
+function Users() {
+  let navigate = useNavigate();
+  let [loading, setLoading] = useState(false);
+  let [users, setUsers] = useState([]);
+  let [error, setError] = useState([]);
+  let [isShowDialog, setIsShowDialog] = useState(false);
+  let [userId, setUserId] = useState();
+
+  const handleCloseDialog = (id) => {
+    setUserId(id);
+    setIsShowDialog(!isShowDialog);
+  };
 
   useEffect(() => {
     setLoading(true);
     getAllData("users")
       .then((res) => {
-        setAuctions(res);
+        setUsers(res);
         setLoading(false);
+        setError(false);
       })
       .catch(() => {
         setError(true);
@@ -41,16 +51,18 @@ export default function Users() {
     console.log(id);
   };
 
-  const deleteUser = async (id) => {
-    // await api
-    //   .delete("auctions/" + id)
-    //   .then((res) => {
-    //     console.log(res);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
-    // setIsShowDialog(!isShowDialog);
+  const handleDelete = async (id) => {
+    setLoading(true);
+    deleteData("users/" + id)
+      .then((res) => {
+        const newUsers = users.filter((user) => user.id !== id);
+        setUsers(newUsers);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setIsShowDialog(!isShowDialog);
   };
 
   return (
@@ -118,7 +130,7 @@ export default function Users() {
                       ></PencilSquareIcon>
                       <TrashIcon
                         className="h-6 w-6 text-red-600 cursor-pointer"
-                        onClick={() => this.deleteUser(user.id)}
+                        onClick={() => handleCloseDialog(user.id)}
                       ></TrashIcon>
                     </td>
                   </tr>
@@ -129,6 +141,19 @@ export default function Users() {
         )}
       </div>
       <AdminPagination></AdminPagination>
+      {isShowDialog && (
+        <DeleteConfirmation
+          title={"Delete Auction"}
+          handleCloseDialog={handleCloseDialog}
+          handleDelete={handleDelete}
+          itemId={userId}
+          size={"w-2/7"}
+          color={"bg-green"}
+        >
+          Dialog Content goes here...
+        </DeleteConfirmation>
+      )}
     </div>
   );
 }
+export default Users;

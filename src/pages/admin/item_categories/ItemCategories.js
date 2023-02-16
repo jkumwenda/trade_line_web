@@ -1,30 +1,41 @@
 import React, { useState, useEffect } from "react";
 import AdminPagination from "../../../components/AdminPagination";
 import AdminPageSearch from "../../../components/AdminPageSearch";
+import DeleteConfirmation from "../../../components/DeleteConfirmation";
+import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { getAllData, deleteData } from "../../../services/APIService";
+import ClipLoader from "react-spinners/ClipLoader";
 import {
   PlusCircleIcon,
   TrashIcon,
   PencilSquareIcon,
   EyeIcon,
 } from "@heroicons/react/24/solid";
-import { NavLink } from "react-router-dom";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-const api = axios.create({
-  baseURL: "http://localhost:8000/",
-});
 
 function ItemCategories() {
   const navigate = useNavigate();
   const [item_categories, setItemCategories] = useState([]);
+  const [error, setError] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [isShowDialog, setIsShowDialog] = useState(false);
+  const [itemCategoryId, setItemCategoryId] = useState();
+
+  const handleCloseDialog = (id) => {
+    setItemCategoryId(id);
+    setIsShowDialog(!isShowDialog);
+  };
+
   useEffect(() => {
-    api
-      .get("categories/")
+    setLoading(true);
+    getAllData("categories")
       .then((res) => {
-        setItemCategories(res.data);
+        setItemCategories(res);
+        setLoading(false);
+        setError(false);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
+        setError(true);
       });
   }, []);
 
@@ -36,15 +47,20 @@ function ItemCategories() {
     console.log(id);
   };
 
-  const deleteItemCategory = async (id) => {
-    await api
-      .delete("categories/" + id)
+  const handleDelete = async (id) => {
+    setLoading(true);
+    deleteData("categories/" + id)
       .then((res) => {
-        console.log(res);
+        const newItemCategories = item_categories.filter(
+          (item_category) => item_category.id !== id
+        );
+        setItemCategories(newItemCategories);
+        setLoading(false);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((error) => {
+        console.log(error);
       });
+    setIsShowDialog(!isShowDialog);
   };
 
   return (
@@ -63,51 +79,69 @@ function ItemCategories() {
         <AdminPageSearch></AdminPageSearch>
       </div>
       <div className="p-4">
-        <div className="overflow-x-auto relative">
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs bg-gray-100 text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
-              <tr>
-                <th scope="col" className="py-3 px-6">
-                  Item Category
-                </th>
-                <th scope="col" className="py-3 px-6">
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {item_categories.map((item_categories) => (
-                <tr
-                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                  key={item_categories.id}
-                >
-                  <th
-                    scope="row"
-                    className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                  >
-                    {item_categories.category}
+        {loading ? (
+          <div className="p-4 m-4 grid justify-items-center">
+            <ClipLoader color={"#DB2F30"} loading={loading} size={50} />
+          </div>
+        ) : (
+          <div className="overflow-x-auto relative">
+            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <thead className="text-xs bg-gray-100 text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                  <th scope="col" className="py-3 px-6">
+                    Item Category
                   </th>
-                  <td className="py-4 px-6 flex flex-start space-x-2">
-                    <EyeIcon
-                      className="h-7 w-7 text-blue-500 cursor-pointer"
-                      onClick={() => viewItemCategory(item_categories.id)}
-                    ></EyeIcon>
-                    <PencilSquareIcon
-                      className="h-6 w-6 text-green-600 cursor-pointer"
-                      onClick={() => updateItemCategory(item_categories.id)}
-                    ></PencilSquareIcon>
-                    <TrashIcon
-                      className="h-6 w-6 text-red-600 cursor-pointer"
-                      onClick={() => deleteItemCategory(item_categories.id)}
-                    ></TrashIcon>
-                  </td>
+                  <th scope="col" className="py-3 px-6">
+                    Action
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {item_categories.map((item_categories) => (
+                  <tr
+                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                    key={item_categories.id}
+                  >
+                    <th
+                      scope="row"
+                      className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                    >
+                      {item_categories.category}
+                    </th>
+                    <td className="py-4 px-6 flex flex-start space-x-2">
+                      <EyeIcon
+                        className="h-7 w-7 text-blue-500 cursor-pointer"
+                        onClick={() => viewItemCategory(item_categories.id)}
+                      ></EyeIcon>
+                      <PencilSquareIcon
+                        className="h-6 w-6 text-green-600 cursor-pointer"
+                        onClick={() => updateItemCategory(item_categories.id)}
+                      ></PencilSquareIcon>
+                      <TrashIcon
+                        className="h-6 w-6 text-red-600 cursor-pointer"
+                        onClick={() => handleCloseDialog(item_categories.id)}
+                      ></TrashIcon>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
       <AdminPagination></AdminPagination>
+      {isShowDialog && (
+        <DeleteConfirmation
+          title={"Delete Auction"}
+          handleCloseDialog={handleCloseDialog}
+          handleDelete={handleDelete}
+          itemId={itemCategoryId}
+          size={"w-2/7"}
+          color={"bg-green"}
+        >
+          Dialog Content goes here...
+        </DeleteConfirmation>
+      )}
     </div>
   );
 }

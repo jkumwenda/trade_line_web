@@ -3,8 +3,10 @@ import AdminPagination from "../../../components/AdminPagination";
 import AdminPageSearch from "../../../components/AdminPageSearch";
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { getAllData } from "../../../services/APIService";
 import ClipLoader from "react-spinners/ClipLoader";
+import { getAllData, deleteData } from "../../../services/APIService";
+import DeleteConfirmation from "../../../components/DeleteConfirmation";
+
 import {
   PlusCircleIcon,
   TrashIcon,
@@ -13,10 +15,19 @@ import {
 } from "@heroicons/react/24/solid";
 
 function Roles() {
-  const navigate = useNavigate();
-  const [roles, setRoles] = useState([]);
-  const [error, setError] = useState(true);
-  const [loading, setLoading] = useState(false);
+  let navigate = useNavigate();
+  let [roles, setRoles] = useState([]);
+  let [error, setError] = useState([]);
+  let [loading, setLoading] = useState(false);
+  const [isShowDialog, setIsShowDialog] = useState(false);
+  const [roleId, setRoleId] = useState();
+  const [deleteSuccessful, setDeleteSuccessful] = useState(false);
+
+  const handleCloseDialog = (id) => {
+    setRoleId(id);
+    setIsShowDialog(!isShowDialog);
+  };
+
   useEffect(() => {
     setLoading(true);
     getAllData("roles")
@@ -28,25 +39,32 @@ function Roles() {
       .catch(() => {
         setError(true);
       });
-  }, []);
+  }, [deleteSuccessful]);
 
   const viewRole = async (id) => {
     console.log(id);
   };
 
   const updateRole = async (id) => {
-    console.log(id);
+    return navigate("/edit-role", {
+      state: { roleId: id },
+      replace: true,
+    });
   };
 
-  const deleteRole = async (id) => {
-    // await api
-    //   .delete("roles/" + id)
-    //   .then((res) => {
-    //     console.log(res);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
+  const handleDelete = async (id) => {
+    setLoading(true);
+    deleteData("roles/" + id)
+      .then((res) => {
+        // const newRoles = roles.filter((role) => role.id !== id);
+        setDeleteSuccessful(!deleteSuccessful);
+        // setRoles(newRoles);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setIsShowDialog(!isShowDialog);
   };
 
   return (
@@ -65,7 +83,7 @@ function Roles() {
       <div className="p-4">
         {loading ? (
           <div className="p-4 m-4 grid justify-items-center">
-            <ClipLoader p-4 m-4 color={"#DB2F30"} loading={loading} size={50} />
+            <ClipLoader color={"#DB2F30"} loading={loading} size={50} />
           </div>
         ) : (
           <div className="overflow-x-auto relative">
@@ -107,7 +125,7 @@ function Roles() {
                       ></PencilSquareIcon>
                       <TrashIcon
                         className="h-6 w-6 text-red-600 cursor-pointer"
-                        onClick={() => deleteRole(role.id)}
+                        onClick={() => handleCloseDialog(role.id)}
                       ></TrashIcon>
                     </td>
                   </tr>
@@ -118,6 +136,18 @@ function Roles() {
         )}
       </div>
       <AdminPagination></AdminPagination>
+      {isShowDialog && (
+        <DeleteConfirmation
+          title={"Delete Auction"}
+          handleCloseDialog={handleCloseDialog}
+          handleDelete={handleDelete}
+          itemId={roleId}
+          size={"w-2/7"}
+          color={"bg-green"}
+        >
+          Dialog Content goes here...
+        </DeleteConfirmation>
+      )}
     </div>
   );
 }

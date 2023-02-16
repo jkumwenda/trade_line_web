@@ -2,16 +2,31 @@ import React, { useState } from "react";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function AdminHeader() {
   const [show, toggleShow] = useState(false);
   const navigate = useNavigate();
-  function logout() {
-    if (localStorage.getItem("access_token")) {
-      localStorage.removeItem("access_token");
-      return navigate("/login");
-    }
-  }
+
+  const logout = async () => {
+    axios
+      .get("http://localhost:8000/api/auth/logout", {
+        headers: {
+          Authorization: "Bearer  " + localStorage.getItem("access_token"),
+        },
+      })
+      .then(function (response) {
+        if (response.status === 200) {
+          localStorage.removeItem("firstname");
+          localStorage.removeItem("access_token");
+          return navigate("/login");
+        }
+      })
+      .catch(function (error) {
+        console.log(error, "error");
+        return navigate("/login");
+      });
+  };
 
   return (
     <div className="flex sm:justify-end justify-start w-full z-10">

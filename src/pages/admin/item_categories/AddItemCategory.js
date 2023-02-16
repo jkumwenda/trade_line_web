@@ -8,7 +8,7 @@ export default function AddItemCategory() {
 
   const handleSubmit = async (event) => {
     let data = { category: category };
-    await createData("categories/", data).then(({ res }) => res);
+    await createData("categories/", data).then((res) => res);
     return navigate("/item_categories", { replace: true });
   };
 
@@ -32,7 +32,7 @@ export default function AddItemCategory() {
               name="category"
               value={category}
               className="border border-gray-400 bg-gray-50 text-gray-600 text-sm rounded-xl block w-full p-3 dark:text-white"
-              placeholder="item_category"
+              placeholder="Item category"
               required
               onChange={(event) => setCategory(event.target.value)}
             />

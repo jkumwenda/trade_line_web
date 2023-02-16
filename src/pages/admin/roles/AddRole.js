@@ -9,7 +9,7 @@ export default function AddUser() {
 
   const handleSubmit = async (event) => {
     let data = { role: role, description: description };
-    await createData("roles/", data).then(({ res }) => res);
+    await createData("roles", data).then((res) => res);
     return navigate("/roles", { replace: true });
   };
 

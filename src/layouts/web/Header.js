@@ -7,11 +7,13 @@ class Header extends Component {
       <div className="w-10/12 flex p-4">
         <div className="w-full flex items-center justify-between mx-auto">
           <div className="flex text-5xl font-raleway">
-            <img
-              src={require("../../assets/images/logo.png")}
-              className="w-52 h-auto rounded-xl"
-              alt="..."
-            />
+            <NavLink to="/">
+              <img
+                src={require("../../assets/images/logo.png")}
+                className="w-52 h-auto rounded-xl"
+                alt="..."
+              />
+            </NavLink>
           </div>
           <button
             data-collapse-toggle="navbar-default"
@@ -60,6 +62,14 @@ class Header extends Component {
                   className="block py-2 pr-4 pl-3 text- hover:text-cerise-red"
                 >
                   Auction Items
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="my-bids"
+                  className="block py-2 pr-4 pl-3 text- hover:text-cerise-red"
+                >
+                  My Bids
                 </NavLink>
               </li>
               <li>

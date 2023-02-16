@@ -3,7 +3,7 @@ import AdminPagination from "../../../components/AdminPagination";
 import AdminPageSearch from "../../../components/AdminPageSearch";
 import { useNavigate, NavLink } from "react-router-dom";
 import DeleteConfirmation from "../../../components/DeleteConfirmation";
-import { getAllData } from "../../../services/APIService";
+import { getAllData, deleteData } from "../../../services/APIService";
 import ClipLoader from "react-spinners/ClipLoader";
 import {
   PlusCircleIcon,
@@ -49,16 +49,19 @@ function Auctions() {
   };
 
   const handleDelete = async (id) => {
-    // await api
-    //   .delete("auctions/" + id)
-    //   .then((res) => {
-    //     console.log(res);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
-    // setIsShowDialog(!isShowDialog);
+    setLoading(true);
+    deleteData("auctions/" + id)
+      .then((res) => {
+        const newAuctions = auctions.filter((auction) => auction.id !== id);
+        setAuctions(newAuctions);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setIsShowDialog(!isShowDialog);
   };
+
   return (
     <div className="flex flex-col bg-concrete-50 shadow-sm rounded-xl">
       <h3 className="p-4 font-raleway rounded-t-xl font-extrabold border-b border-concrete-500 text-pickled-bluewood-400">
