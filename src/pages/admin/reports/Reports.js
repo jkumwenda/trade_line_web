@@ -1,38 +1,45 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, NavLink } from "react-router-dom";
-import { getAllData } from "../../../services/APIService";
+import AdminPageSearch from "src/components/AdminPageSearch";
+import AdminPagination from "src/components/AdminPagination";
+import { getAllData } from "src/services/APIService";
+import { NavLink, useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { EyeIcon } from "@heroicons/react/24/solid";
 
 export default function Reports() {
-  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [error, setError] = useState([]);
   const [loading, setLoading] = useState(false);
   const [reports, setReports] = useState([]);
-  const [error, setError] = useState(true);
-  const [isShowDialog, setIsShowDialog] = useState(false);
-
-  const handleCloseDialog = (id) => {
-    setIsShowDialog(!isShowDialog);
-  };
 
   useEffect(() => {
     setLoading(true);
-    getAllData("bids")
+    getAllData("bids", currentPage)
       .then((res) => {
-        setReports(res);
-        console.log(res);
+        setReports(res.data);
+        setTotalPages(res.pages);
         setLoading(false);
+        console.log(res);
       })
       .catch(() => {
         setError(true);
       });
-  }, []);
+  }, [currentPage]);
 
-  const viewAuction = async (id) => {
-    // return navigate("/auction", {
-    //   state: { auctionId: id },
-    //   replace: true,
-    // });
+  const viewAuction = async (id) => {};
+
+  const handleSearch = async (searchData) => {
+    setLoading(true);
+    getAllData("bids", currentPage, searchData)
+      .then((res) => {
+        setReports(res.data);
+        setLoading(false);
+        setError(false);
+      })
+      .catch(() => {
+        setError(true);
+      });
   };
 
   return (
@@ -40,6 +47,9 @@ export default function Reports() {
       <h3 className="p-4 font-raleway rounded-t-xl font-extrabold border-b border-concrete-500 text-pickled-bluewood-400">
         Reports
       </h3>
+      <div className="flex justify-between items-center w-full p-4">
+        <AdminPageSearch onSearch={handleSearch} />
+      </div>
       <div className="p-4">
         {" "}
         {loading ? (
@@ -56,6 +66,9 @@ export default function Reports() {
                   </th>
                   <th scope="col" className="py-3 px-6">
                     Product
+                  </th>
+                  <th scope="col" className="py-3 px-6">
+                    Product Code
                   </th>
                   <th scope="col" className="py-3 px-6">
                     Trans ID
@@ -84,7 +97,7 @@ export default function Reports() {
                 {reports.map((report) => (
                   <tr
                     className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                    key={report.id}
+                    key={report.Bid.id}
                   >
                     <th
                       scope="row"
@@ -93,6 +106,7 @@ export default function Reports() {
                       {report.Bidder.phone_number}
                     </th>
                     <td className="py-4 px-6">{report.Product.product}</td>
+                    <td className="py-4 px-6">{report.Product.product_code}</td>
                     <td className="py-4 px-6">{report.Bid.tran_id}</td>
                     <td className="py-4 px-6">{report.Product.bid_fee}</td>
                     <td className="py-4 px-6">{report.Bid.amount}</td>
@@ -113,6 +127,13 @@ export default function Reports() {
             </table>
           </div>
         )}
+      </div>
+      <div className="flex items-start space-x-3 p-4">
+        <AdminPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );

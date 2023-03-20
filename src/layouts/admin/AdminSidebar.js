@@ -60,6 +60,12 @@ class AdminSidebar extends Component {
             </NavLink>
           </li>
           <li className="hover:bg-concrete-500 p-1 rounded-xl">
+            <NavLink to="/bidders" className="flex items-center space-x-2">
+              <BanknotesIcon className="h-6 w-6 text-pickled-bluewood-300"></BanknotesIcon>
+              <span>Bidders</span>
+            </NavLink>
+          </li>
+          <li className="hover:bg-concrete-500 p-1 rounded-xl">
             <NavLink to="/traders" className="flex items-center space-x-2">
               <BanknotesIcon className="h-6 w-6 text-pickled-bluewood-300"></BanknotesIcon>
               <span>Traders</span>

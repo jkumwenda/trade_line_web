@@ -9,7 +9,7 @@ class BidSidebar extends Component {
         <h1 className="text-2xl font-bold font-raleway-base">Ready to bid?</h1>
         <div className="flex flex-col space-y-2 text-concrete-200">
           <NavLink
-            to=""
+            to="/auction-items"
             className="flex flex-row space-x-4 bg-cerise-red-500 rounded-xl p-3 px-6"
           >
             <ShoppingBagIcon className="h-6 w-6" />

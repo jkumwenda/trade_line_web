@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import AdminPagination from "../../../components/AdminPagination";
-import AdminPageSearch from "../../../components/AdminPageSearch";
-import { NavLink } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { getAllData, deleteData } from "../../../services/APIService";
+import AdminPageSearch from "src/components/AdminPageSearch";
+import AdminPagination from "src/components/AdminPagination";
+import { getAllData, deleteData } from "src/services/APIService";
+import DeleteConfirmation from "src/components/DeleteConfirmation";
+import { NavLink, useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
-import DeleteConfirmation from "../../../components/DeleteConfirmation";
 
 import {
   PlusCircleIcon,
@@ -15,11 +14,14 @@ import {
 } from "@heroicons/react/24/solid";
 
 function Users() {
-  let navigate = useNavigate();
-  let [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [isShowDialog, setIsShowDialog] = useState(false);
+  const [deleteSuccessful, setDeleteSuccessful] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [error, setError] = useState([]);
+  const [loading, setLoading] = useState(false);
   let [users, setUsers] = useState([]);
-  let [error, setError] = useState([]);
-  let [isShowDialog, setIsShowDialog] = useState(false);
   let [userId, setUserId] = useState();
 
   const handleCloseDialog = (id) => {
@@ -29,9 +31,9 @@ function Users() {
 
   useEffect(() => {
     setLoading(true);
-    getAllData("users")
+    getAllData("users", currentPage)
       .then((res) => {
-        setUsers(res);
+        setUsers(res.data);
         setLoading(false);
         setError(false);
       })
@@ -48,7 +50,10 @@ function Users() {
   };
 
   const updateUser = async (id) => {
-    console.log(id);
+    return navigate("/edit-user", {
+      state: { userId: id },
+      replace: true,
+    });
   };
 
   const handleDelete = async (id) => {
@@ -65,6 +70,20 @@ function Users() {
     setIsShowDialog(!isShowDialog);
   };
 
+  const handleSearch = async (searchData) => {
+    setLoading(true);
+    getAllData("users", currentPage, searchData)
+      .then((res) => {
+        setUsers(res.data);
+        console.log(res.data);
+        setLoading(false);
+        setError(false);
+      })
+      .catch(() => {
+        setError(true);
+      });
+  };
+
   return (
     <div className="flex flex-col bg-concrete-50 shadow-sm rounded-xl">
       <h3 className="p-4 font-raleway rounded-t-xl font-extrabold border-b border-concrete-500 text-pickled-bluewood-400">
@@ -75,7 +94,7 @@ function Users() {
           <PlusCircleIcon className="h-12 w-12 text-cerise-500"></PlusCircleIcon>
           <p className="font-extrabold text-sm">Add user</p>
         </NavLink>
-        <AdminPageSearch></AdminPageSearch>
+        <AdminPageSearch onSearch={handleSearch} />
       </div>
       <div className="p-4">
         {loading ? (
@@ -94,10 +113,10 @@ function Users() {
                     Lastname
                   </th>
                   <th scope="col" className="py-3 px-6">
-                    Phone
+                    Email/Username
                   </th>
                   <th scope="col" className="py-3 px-6">
-                    Email
+                    Phone
                   </th>
                   <th scope="col" className="py-3 px-6">
                     Action
@@ -117,8 +136,8 @@ function Users() {
                       {user.firstname}
                     </th>
                     <td className="py-4 px-6">{user.lastname}</td>
-                    <td className="py-4 px-6">{user.phone}</td>
                     <td className="py-4 px-6">{user.email}</td>
+                    <td className="py-4 px-6">{user.phone}</td>
                     <td className="py-4 px-6 flex flex-start space-x-2">
                       <EyeIcon
                         className="h-7 w-7 text-blue-500 cursor-pointer"
@@ -126,7 +145,7 @@ function Users() {
                       ></EyeIcon>
                       <PencilSquareIcon
                         className="h-6 w-6 text-green-600 cursor-pointer"
-                        onClick={() => this.updateUser(user.id)}
+                        onClick={() => updateUser(user.id)}
                       ></PencilSquareIcon>
                       <TrashIcon
                         className="h-6 w-6 text-red-600 cursor-pointer"
@@ -140,7 +159,11 @@ function Users() {
           </div>
         )}
       </div>
-      <AdminPagination></AdminPagination>
+      <AdminPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
       {isShowDialog && (
         <DeleteConfirmation
           title={"Delete Auction"}

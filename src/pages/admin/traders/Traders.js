@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from "react";
-import AdminPagination from "../../../components/AdminPagination";
-import AdminPageSearch from "../../../components/AdminPageSearch";
-import { useNavigate } from "react-router-dom";
-import { getAllData, deleteData } from "../../../services/APIService";
+import AdminPageSearch from "src/components/AdminPageSearch";
+import AdminPagination from "src/components/AdminPagination";
+import { getAllData, deleteData } from "src/services/APIService";
+import DeleteConfirmation from "src/components/DeleteConfirmation";
+import { NavLink, useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
-import DeleteConfirmation from "../../../components/DeleteConfirmation";
 
 import {
   PlusCircleIcon,
   TrashIcon,
   PencilSquareIcon,
-  EyeIcon,
 } from "@heroicons/react/24/solid";
-import { NavLink } from "react-router-dom";
 
 function Traders() {
   const navigate = useNavigate();
-  const [traders, setTraders] = useState([]);
-  const [error, setError] = useState(true);
   const [isShowDialog, setIsShowDialog] = useState(false);
+  const [deleteSuccessful, setDeleteSuccessful] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [error, setError] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [traders, setTraders] = useState([]);
   const [traderId, setTraderId] = useState();
 
   const handleCloseDialog = (id) => {
@@ -29,21 +30,24 @@ function Traders() {
 
   useEffect(() => {
     setLoading(true);
-    getAllData("traders")
+    getAllData("traders", currentPage)
       .then((res) => {
-        setTraders(res);
+        setTraders(res.data);
         setLoading(false);
       })
       .catch(() => {
         setError(true);
       });
-  }, []);
+  }, [deleteSuccessful]);
 
   const viewTrader = async (id) => {
     console.log(id);
   };
   const updateTrader = async (id) => {
-    console.log(id);
+    return navigate("/edit-trader", {
+      state: { traderId: id },
+      replace: true,
+    });
   };
 
   const handleDelete = async (id) => {
@@ -60,6 +64,19 @@ function Traders() {
     setIsShowDialog(!isShowDialog);
   };
 
+  const handleSearch = async (searchData) => {
+    setLoading(true);
+    getAllData("traders", currentPage, searchData)
+      .then((res) => {
+        setTraders(res.data);
+        setLoading(false);
+        setError(false);
+      })
+      .catch(() => {
+        setError(true);
+      });
+  };
+
   return (
     <div className="flex flex-col bg-concrete-50 shadow-sm rounded-xl">
       <h3 className="p-4 font-raleway rounded-t-xl font-extrabold border-b border-concrete-500 text-pickled-bluewood-400">
@@ -70,7 +87,7 @@ function Traders() {
           <PlusCircleIcon className="h-12 w-12 text-cerise-500"></PlusCircleIcon>
           <p className="font-extrabold text-sm">Add trader</p>
         </NavLink>
-        <AdminPageSearch></AdminPageSearch>
+        <AdminPageSearch onSearch={handleSearch} />
       </div>
       <div className="p-4">
         {loading ? (
@@ -107,10 +124,6 @@ function Traders() {
                     </th>
                     <td className="py-4 px-6">{trader.address}</td>
                     <td className="py-4 px-6 flex flex-start space-x-2">
-                      <EyeIcon
-                        className="h-7 w-7 text-blue-500 cursor-pointer"
-                        onClick={() => viewTrader(trader.id)}
-                      ></EyeIcon>
                       <PencilSquareIcon
                         className="h-6 w-6 text-green-600 cursor-pointer"
                         onClick={() => updateTrader(trader.id)}
@@ -127,7 +140,11 @@ function Traders() {
           </div>
         )}
       </div>
-      <AdminPagination></AdminPagination>
+      <AdminPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
       {isShowDialog && (
         <DeleteConfirmation
           title={"Delete Auction"}

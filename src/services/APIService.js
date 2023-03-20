@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:8000/api";
+const API_BASE_URL = process.env.REACT_APP_API_URL;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -18,8 +18,14 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-export const getAllData = async (url) => {
-  const res = await api.get("/" + url + "/");
+export const getAllData = async (url, currentPage, search = "") => {
+  const res = await api.get(
+    "/" +
+      url +
+      `/?skip=${(currentPage - 1) * process.env.REACT_APP_PAGE_SIZE}&limit=${
+        process.env.REACT_APP_PAGE_SIZE
+      }&search=${search}`
+  );
   return res.data;
 };
 
@@ -45,10 +51,12 @@ export const getData = async (url, id) => {
 
 export const updateData = async (url, id, usedata) => {
   try {
-    let res = await api.patch("/" + url + "/" + id, usedata);
-    return res.data;
-  } catch (err) {
-    return err;
+    const response = await api.put(`/${url}/${id}`, usedata);
+    console.log(response.data);
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
 };
 

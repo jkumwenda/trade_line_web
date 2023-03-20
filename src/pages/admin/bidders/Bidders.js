@@ -12,7 +12,7 @@ import {
   PencilSquareIcon,
 } from "@heroicons/react/24/solid";
 
-function Roles() {
+function Bidders() {
   const navigate = useNavigate();
   const [isShowDialog, setIsShowDialog] = useState(false);
   const [deleteSuccessful, setDeleteSuccessful] = useState(false);
@@ -20,20 +20,19 @@ function Roles() {
   const [totalPages, setTotalPages] = useState(1);
   const [error, setError] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [roles, setRoles] = useState([]);
-  const [roleId, setRoleId] = useState();
+  const [bidders, setBidders] = useState([]);
+  const [bidderId, setBidderId] = useState();
 
   const handleCloseDialog = (id) => {
-    setRoleId(id);
+    setBidderId(id);
     setIsShowDialog(!isShowDialog);
   };
 
   useEffect(() => {
     setLoading(true);
-    getAllData("roles", currentPage)
+    getAllData("bidders", currentPage)
       .then((res) => {
-        setRoles(res.data);
-        console.log(res.data);
+        setBidders(res.data);
         setLoading(false);
         setError(false);
       })
@@ -43,7 +42,7 @@ function Roles() {
   }, [deleteSuccessful]);
 
   const updateRole = async (id) => {
-    return navigate("/edit-role", {
+    return navigate("/edit-bidder", {
       state: { roleId: id },
       replace: true,
     });
@@ -51,7 +50,7 @@ function Roles() {
 
   const handleDelete = async (id) => {
     setLoading(true);
-    deleteData("roles/" + id)
+    deleteData("bidders/" + id)
       .then((res) => {
         setDeleteSuccessful(!deleteSuccessful);
         setLoading(false);
@@ -64,9 +63,9 @@ function Roles() {
 
   const handleSearch = async (searchData) => {
     setLoading(true);
-    getAllData("roles", currentPage, searchData)
+    getAllData("bidders", currentPage, searchData)
       .then((res) => {
-        setRoles(res.data);
+        setBidders(res.data);
         setLoading(false);
         setError(false);
       })
@@ -78,12 +77,12 @@ function Roles() {
   return (
     <div className="flex flex-col bg-concrete-50 shadow-sm rounded-xl">
       <h3 className="p-4 font-raleway rounded-t-xl font-extrabold border-b border-concrete-500 text-pickled-bluewood-400">
-        Roles
+        Bidders
       </h3>
       <div className="flex justify-between items-center w-full p-4">
-        <NavLink to="/add-role" className="flex items-center space-x-2">
+        <NavLink to="/add-bidder" className="flex items-center space-x-2">
           <PlusCircleIcon className="h-12 w-12 text-cerise-500"></PlusCircleIcon>
-          <p className="font-extrabold text-sm">Add role</p>
+          <p className="font-extrabold text-sm">Add bidder</p>
         </NavLink>
         <AdminPageSearch onSearch={handleSearch} />
       </div>
@@ -99,10 +98,10 @@ function Roles() {
               <thead className="text-xs bg-gray-100 text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                   <th scope="col" className="py-3 px-6">
-                    Role
+                    Phone Number
                   </th>
                   <th scope="col" className="py-3 px-6">
-                    Description
+                    Status
                   </th>
                   <th scope="col" className="py-3 px-6">
                     Action
@@ -110,26 +109,26 @@ function Roles() {
                 </tr>
               </thead>
               <tbody>
-                {roles.map((role) => (
+                {bidders.map((bidder) => (
                   <tr
                     className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                    key={role.id}
+                    key={bidder.id}
                   >
                     <th
                       scope="row"
                       className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                     >
-                      {role.role}
+                      {bidder.phone_number}
                     </th>
-                    <td className="py-4 px-6">{role.description}</td>
+                    <td className="py-4 px-6">{bidder.is_active}</td>
                     <td className="py-4 px-6 flex flex-start space-x-2">
                       <PencilSquareIcon
                         className="h-6 w-6 text-green-600 cursor-pointer"
-                        onClick={() => updateRole(role.id)}
+                        onClick={() => updateRole(bidder.id)}
                       ></PencilSquareIcon>
                       <TrashIcon
                         className="h-6 w-6 text-red-600 cursor-pointer"
-                        onClick={() => handleCloseDialog(role.id)}
+                        onClick={() => handleCloseDialog(bidder.id)}
                       ></TrashIcon>
                     </td>
                   </tr>
@@ -149,7 +148,7 @@ function Roles() {
           title={"Delete Auction"}
           handleCloseDialog={handleCloseDialog}
           handleDelete={handleDelete}
-          itemId={roleId}
+          itemId={bidderId}
           size={"w-2/7"}
           color={"bg-green"}
         >
@@ -160,4 +159,4 @@ function Roles() {
   );
 }
 
-export default Roles;
+export default Bidders;

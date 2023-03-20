@@ -58,10 +58,10 @@ class Header extends Component {
               </li>
               <li>
                 <NavLink
-                  to="auction-items"
+                  to="completed-auctions"
                   className="block py-2 pr-4 pl-3 text- hover:text-cerise-red"
                 >
-                  Auction Items
+                  Completed Auctions
                 </NavLink>
               </li>
               <li>

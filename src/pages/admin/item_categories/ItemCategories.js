@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import AdminPagination from "../../../components/AdminPagination";
-import AdminPageSearch from "../../../components/AdminPageSearch";
-import DeleteConfirmation from "../../../components/DeleteConfirmation";
-import { NavLink } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { getAllData, deleteData } from "../../../services/APIService";
+import AdminPageSearch from "src/components/AdminPageSearch";
+import AdminPagination from "src/components/AdminPagination";
+import { getAllData, deleteData } from "src/services/APIService";
+import DeleteConfirmation from "src/components/DeleteConfirmation";
+import { NavLink, useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
+
 import {
   PlusCircleIcon,
   TrashIcon,
@@ -15,10 +15,13 @@ import {
 
 function ItemCategories() {
   const navigate = useNavigate();
-  const [item_categories, setItemCategories] = useState([]);
+  const [isShowDialog, setIsShowDialog] = useState(false);
+  const [deleteSuccessful, setDeleteSuccessful] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [error, setError] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isShowDialog, setIsShowDialog] = useState(false);
+  const [item_categories, setItemCategories] = useState([]);
   const [itemCategoryId, setItemCategoryId] = useState();
 
   const handleCloseDialog = (id) => {
@@ -28,9 +31,9 @@ function ItemCategories() {
 
   useEffect(() => {
     setLoading(true);
-    getAllData("categories")
+    getAllData("categories", currentPage)
       .then((res) => {
-        setItemCategories(res);
+        setItemCategories(res.data);
         setLoading(false);
         setError(false);
       })
@@ -63,6 +66,19 @@ function ItemCategories() {
     setIsShowDialog(!isShowDialog);
   };
 
+  const handleSearch = async (searchData) => {
+    setLoading(true);
+    getAllData("categories", currentPage, searchData)
+      .then((res) => {
+        setItemCategories(res.data);
+        setLoading(false);
+        setError(false);
+      })
+      .catch(() => {
+        setError(true);
+      });
+  };
+
   return (
     <div className="flex flex-col bg-concrete-50 shadow-sm rounded-xl">
       <h3 className="p-4 font-raleway rounded-t-xl font-extrabold border-b border-concrete-500 text-pickled-bluewood-400">
@@ -76,7 +92,7 @@ function ItemCategories() {
           <PlusCircleIcon className="h-12 w-12 text-cerise-500"></PlusCircleIcon>
           <p className="font-extrabold text-sm">Add item categories</p>
         </NavLink>
-        <AdminPageSearch></AdminPageSearch>
+        <AdminPageSearch onSearch={handleSearch} />
       </div>
       <div className="p-4">
         {loading ? (
@@ -129,7 +145,11 @@ function ItemCategories() {
           </div>
         )}
       </div>
-      <AdminPagination></AdminPagination>
+      <AdminPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
       {isShowDialog && (
         <DeleteConfirmation
           title={"Delete Auction"}

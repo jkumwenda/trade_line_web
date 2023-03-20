@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { useNavigate } from "react-router-dom";
 
-export default function AddUser() {
+export default function EditBidder() {
   const navigate = useNavigate();
   const [role, setRole] = useState("");
   const [description, setDescription] = useState("");

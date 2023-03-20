@@ -1,36 +1,38 @@
 import React, { useState, useEffect } from "react";
-import AdminPagination from "../../../components/AdminPagination";
-import AdminPageSearch from "../../../components/AdminPageSearch";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import AdminPageSearch from "src/components/AdminPageSearch";
+import AdminPagination from "src/components/AdminPagination";
 import {
   getData,
   getAllData,
   deleteData,
   createData,
-  fileUpload,
-} from "../../../services/APIService";
+} from "src/services/APIService";
+import DeleteConfirmation from "src/components/DeleteConfirmation";
+import { useNavigate, useLocation } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
-import DeleteConfirmation from "../../../components/DeleteConfirmation";
 
 import {
   PlusCircleIcon,
   TrashIcon,
   PencilSquareIcon,
-  EyeIcon,
   PhotoIcon,
 } from "@heroicons/react/24/solid";
+
 import axios from "axios";
-const UPLOAD_ENDPOINT = "http://127.0.0.1:8000/api/products/upload/";
+const UPLOAD_ENDPOINT = process.env.REACT_APP_API_URL + "/products/files/";
 
 function Auction() {
   const navigate = useNavigate();
+  const [isShowDialog, setIsShowDialog] = useState(false);
+  const [deleteSuccessful, setDeleteSuccessful] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [error, setError] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(true);
   const [auction, setAuction] = useState([]);
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const { state } = useLocation();
-  const [isShowDialog, setIsShowDialog] = useState(false);
   const { auctionId } = state;
   const [showModal, setShowModal] = useState(false);
   const [showFileModal, setFileModal] = useState(false);
@@ -50,29 +52,22 @@ function Auction() {
 
   useEffect(() => {
     setLoading(true);
-    getData("auctions", auctionId)
+    getData("auctions/products", auctionId)
       .then((res) => {
         setAuction(res);
+        setProducts(res.products);
         setLoading(false);
       })
       .catch(() => {
         setError(true);
       });
-    getAllData("categories")
+
+    getAllData("categories", currentPage)
       .then((res) => {
-        setCategories(res);
+        setCategories(res.data);
       })
       .catch(() => {
         setError(true);
-      });
-
-    getData("products/auction", auctionId)
-      .then((res) => {
-        setProducts(res);
-      })
-      .catch((error) => {
-        setError(true);
-        console.log("Error pano", error);
       });
   }, []);
 
@@ -90,6 +85,7 @@ function Auction() {
     axios
       .post(UPLOAD_ENDPOINT, formData)
       .then((res) => {
+        console.log("NGINI NDI IYI", res);
         alert("File Upload success");
       })
       .catch((err) => alert("File Upload Error"));
@@ -131,6 +127,7 @@ function Auction() {
       bid_fee: bid_fee,
       product_detail: product_detail,
     };
+
     await createData("products", data).then((res) => {
       getData("products/auction", auctionId)
         .then((res) => {
@@ -142,6 +139,19 @@ function Auction() {
         });
     });
     setShowModal(false);
+  };
+
+  const handleSearch = async (searchData) => {
+    setLoading(true);
+    getAllData("auctions", currentPage, searchData)
+      .then((res) => {
+        setProducts(res.data);
+        setLoading(false);
+        setError(false);
+      })
+      .catch(() => {
+        setError(true);
+      });
   };
 
   return (
@@ -173,7 +183,7 @@ function Auction() {
           <PlusCircleIcon className="h-12 w-12 text-cerise-500"></PlusCircleIcon>
           <p className="font-extrabold text-sm">Add auction product</p>
         </button>
-        <AdminPageSearch></AdminPageSearch>
+        <AdminPageSearch onSearch={handleSearch} />
       </div>
       <div className="p-4">
         {loading ? (
@@ -238,7 +248,11 @@ function Auction() {
           </div>
         )}
       </div>
-      <AdminPagination></AdminPagination>
+      <AdminPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
       {showModal ? (
         <div className="fixed inset-0 z-10 overflow-y-auto">
           <div

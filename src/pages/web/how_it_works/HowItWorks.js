@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import BidSidebar from "../../../components/BidSidebar";
+import BidSidebar from "src/components/BidSidebar";
 
 class HowItWorks extends Component {
   render() {
