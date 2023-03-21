@@ -173,13 +173,12 @@ function Home() {
                       </p>
                     </div>
                     <div className="flex justify-center text-center text-sm">
-                      <div className="drop-shadow-sm px-4 p-1 bg-selago-500 rounded-xl">
-                        {/* {product.auction.bid_end_time} */}
+                      {/* <div className="drop-shadow-sm px-4 p-1 bg-selago-500 rounded-xl">
                         <div>{remainingTime.days} days</div>
                         <div>{remainingTime.hours} hours</div>
                         <div>{remainingTime.minutes} minutes</div>
                         <div>{remainingTime.seconds} seconds</div>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                   <div className="flex w-full justify-center">
